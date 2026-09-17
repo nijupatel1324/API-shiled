@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Sign In</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh">
+  <div style="width:100%;max-width:400px;padding:0 16px">
+    <div class="card">
+      <div class="brand" style="font-size:26px;text-align:center;margin-bottom:4px">API-SHIELD</div>
+      <p style="text-align:center;color:#9fb3c8;font-size:14px;margin-top:0">Advanced API Security Scanner</p>
+      {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+      <form method="post" action="{{ url_for('login') }}">
+        <label>Username</label>
+        <input type="text" name="username" required autofocus>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <button class="btn" style="width:100%" type="submit">Sign In</button>
+      </form>
+      <p style="font-size:12px;color:#9fb3c8;margin-top:14px">
+        Default demo account: <span class="mono">admin / Admin@123</span>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

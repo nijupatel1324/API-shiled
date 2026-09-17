@@ -1,0 +1,14 @@
+app:
+  name: "API-SHIELD"
+  version: "1.0.0"
+
+security:
+  allowed_hosts:
+    - "127.0.0.1"
+    - "localhost"
+  request_timeout: 10
+  max_redirects: 3
+
+logging:
+  level: "DEBUG"
+  file: "logs/api_shield.log"

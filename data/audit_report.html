@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API-SHIELD Security Audit - Test Vulnerable API</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 30px 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #38bdf8;
+        }
+        .grade-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            background-color: #dd6b20;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-critical { background-color: #991b1b; color: #fecaca; }
+        .badge-high { background-color: #c2410c; color: #ffedd5; }
+        .badge-medium { background-color: #b45309; color: #fef3c7; }
+        .badge-low { background-color: #1e3a8a; color: #dbeafe; }
+        .badge-gray { background-color: #334155; color: #cbd5e1; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        pre {
+            background-color: #090d16;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            overflow-x: auto;
+            color: #38bdf8;
+            font-size: 0.9rem;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+        }
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <div class="brand">API-SHIELD</div>
+                <h2>Automated Security Audit Report</h2>
+                <p style="color: var(--text-muted); margin: 0;">
+                    Project: <strong>Test Vulnerable API</strong> | 
+                    Target: <code>http://127.0.0.1:5001</code> | 
+                    Audited: 2026-09-11 05:15:18 UTC
+                </p>
+            </div>
+            <div style="text-align: center;">
+                <div class="grade-badge">D</div>
+                <div style="margin-top: 5px; font-weight: 700;">Score: 60/100</div>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Endpoints Scanned</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: #f87171;">6</div>
+                <div class="stat-label">Total Vulnerabilities</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: #fb923c;">3</div>
+                <div class="stat-label">High / Critical Endpoints</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" style="color: #4ade80;">0</div>
+                <div class="stat-label">Hardened Endpoints</div>
+            </div>
+        </div>
+
+        <section>
+            <h2>Prioritized Engineering Remediation Roadmap</h2>
+            <p style="color: var(--text-muted);">
+                Actionable fix advisories ranked by attack severity and operational risk.
+            </p>
+            
+            <div class="card advisory-card">
+                <div class="card-header">
+                    <span class="badge badge-high">API7:2023 - Security Misconfiguration</span>
+                    <h3>Unencrypted API Transmission (Cleartext HTTP)</h3>
+                </div>
+                <p class="meta"><strong>CWE:</strong> CWE-319: Cleartext Transmission of Sensitive Information | <strong>Affected:</strong> <span class='badge badge-gray'>N/A http://127.0.0.1:5001</span> </p>
+                <p class="impact">Credentials, authorization tokens, personal identifiable information (PII), and sensitive business data are transmitted in cleartext and can be intercepted by anyone on the same network (e.g., public Wi-Fi, malicious proxies, compromised routers).</p>
+                <h4>Remediation Steps:</h4>
+                <ol><li>Configure TLS 1.2 or TLS 1.3 on your reverse proxy (Nginx, Caddy, Cloudflare, AWS ALB).</li><li>Automatically redirect all HTTP traffic to HTTPS using a 301 Permanent Redirect.</li><li>Deploy the Strict-Transport-Security (HSTS) header to force clients to use HTTPS.</li><li>Obtain automated free certificates from Let's Encrypt or your cloud provider.</li></ol>
+                <h4>Recommended Patch:</h4>
+                <pre><code># REMEDIATED (Nginx configuration with TLS & HTTP-&gt;HTTPS redirect):
+server {
+    listen 80;
+    server_name api.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.example.com;
+    ssl_certificate /etc/letsencrypt/live/api.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
+    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains' always;
+    location / { proxy_pass http://backend:5000; }
+}
+</code></pre>
+            </div>
+            
+            <div class="card advisory-card">
+                <div class="card-header">
+                    <span class="badge badge-high">API7:2023 - Security Misconfiguration</span>
+                    <h3>Missing Security Configuration Headers</h3>
+                </div>
+                <p class="meta"><strong>CWE:</strong> CWE-16: Configuration | <strong>Affected:</strong> <span class='badge badge-gray'>GET http://127.0.0.1:5001/api/users</span> <span class='badge badge-gray'>GET http://127.0.0.1:5001/api/profile</span> <span class='badge badge-gray'>GET http://127.0.0.1:5001/api/products</span> </p>
+                <p class="impact">Without defense-in-depth security headers, browser clients are susceptible to MIME-sniffing, clickjacking, protocol downgrade attacks, and cross-site scripting.</p>
+                <h4>Remediation Steps:</h4>
+                <ol><li>Set `X-Content-Type-Options: nosniff` on all responses.</li><li>Set `X-Frame-Options: DENY` (or `SAMEORIGIN`).</li><li>Set `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` on JSON APIs.</li><li>Set `Strict-Transport-Security: max-age=31536000; includeSubDomains` on HTTPS APIs.</li><li>Remove identifying banners like `Server` and `X-Powered-By`.</li></ol>
+                <h4>Recommended Patch:</h4>
+                <pre><code># REMEDIATED (Flask after_request middleware):
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers.pop('X-Powered-By', None)
+    return response
+</code></pre>
+            </div>
+            
+            <div class="card advisory-card">
+                <div class="card-header">
+                    <span class="badge badge-high">API3:2023 - Broken Object Property Level Authorization</span>
+                    <h3>Improper Input Validation & Mass Assignment</h3>
+                </div>
+                <p class="meta"><strong>CWE:</strong> CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes | <strong>Affected:</strong> <span class='badge badge-gray'>POST http://127.0.0.1:5001/api/users</span> </p>
+                <p class="impact">Clients can inject privileged fields (e.g. `role: admin`, `verified: true`, `balance: 99999`) directly into backend data structures, leading to privilege escalation or state tampering.</p>
+                <h4>Remediation Steps:</h4>
+                <ol><li>Use strict Data Transfer Objects (DTOs) or schema validation libraries (Pydantic, Marshmallow, Joi, Zod).</li><li>Explicitly allowlist only the fields that clients are allowed to create or modify.</li><li>Reject or strip unexpected properties from request payloads before passing them to the database model.</li></ol>
+                <h4>Recommended Patch:</h4>
+                <pre><code># REMEDIATED (Flask with explicit allowlist):
+ALLOWED_FIELDS = {'username', 'email', 'password'}
+
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    # Filter out any non-whitelisted keys:
+    clean_data = {k: data[k] for k in ALLOWED_FIELDS if k in data}
+    clean_data['role'] = 'user'  # Enforce server-managed default
+    new_user = User(**clean_data)
+    db.session.add(new_user)
+    db.session.commit()
+</code></pre>
+            </div>
+            
+            <div class="card advisory-card">
+                <div class="card-header">
+                    <span class="badge badge-high">API1:2023 - Broken Object Level Authorization</span>
+                    <h3>Broken Object Level Authorization (BOLA / IDOR)</h3>
+                </div>
+                <p class="meta"><strong>CWE:</strong> CWE-639: Authorization Bypass Through User-Controlled Key | <strong>Affected:</strong> <span class='badge badge-gray'>GET http://127.0.0.1:5001/api/users/{user_id}</span> </p>
+                <p class="impact">Attackers can access, modify, or delete sensitive data belonging to other users simply by manipulating object identifiers (e.g., user IDs, order IDs) in the request URL or body.</p>
+                <h4>Remediation Steps:</h4>
+                <ol><li>Implement an authorization check on EVERY request that accesses an object by ID.</li><li>Never trust IDs supplied in the URL or request body as proof of authorization.</li><li>Bind the query directly to the authenticated user's session/token identity.</li><li>Use unpredictable, non-sequential IDs (such as UUIDv4) to reduce enumeration risk as defense-in-depth.</li></ol>
+                <h4>Recommended Patch:</h4>
+                <pre><code># REMEDIATED (Flask):
+@app.route('/api/users/&lt;int:user_id&gt;', methods=['GET'])
+@require_auth
+def get_user(user_id):
+    current_user = get_current_authenticated_user()
+    if current_user.id != user_id and not current_user.is_admin:
+        return jsonify({'error': 'Forbidden: Access denied to requested resource'}), 403
+    user = User.query.get_or_404(user_id)
+    return jsonify(user.to_dict())
+</code></pre>
+            </div>
+            
+        </section>
+
+        <section style="margin-top: 40px;">
+            <h2>Complete Vulnerability Findings Log</h2>
+            <div class="card" style="padding: 0; overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Vulnerability</th>
+                            <th>Target Endpoint</th>
+                            <th>OWASP Mapping</th>
+                            <th>Recommended Remediation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td><span class="badge badge-high">HIGH</span></td>
+                <td><strong>API Served Over HTTP (No TLS)</strong></td>
+                <td><code>N/A http://127.0.0.1:5001</code></td>
+                <td><small>API7:2023 - Security Misconfiguration</small></td>
+                <td><small>Deploy behind HTTPS with a valid TLS certificate.</small></td>
+            </tr>
+            
+            <tr>
+                <td><span class="badge badge-medium">MEDIUM</span></td>
+                <td><strong>Missing Security Configuration Headers</strong></td>
+                <td><code>GET http://127.0.0.1:5001/api/users</code></td>
+                <td><small>API7:2023 - Security Misconfiguration</small></td>
+                <td><small>Add standard HTTP security headers to all responses.</small></td>
+            </tr>
+            
+            <tr>
+                <td><span class="badge badge-high">HIGH</span></td>
+                <td><strong>Improper Input Validation & Mass Assignment</strong></td>
+                <td><code>POST http://127.0.0.1:5001/api/users</code></td>
+                <td><small>API3:2023 - Broken Object Property Level Authorization</small></td>
+                <td><small>Use strict DTOs and field allowlists.</small></td>
+            </tr>
+            
+            <tr>
+                <td><span class="badge badge-high">HIGH</span></td>
+                <td><strong>Broken Object Level Authorization (BOLA)</strong></td>
+                <td><code>GET http://127.0.0.1:5001/api/users/{user_id}</code></td>
+                <td><small>API1:2023 - Broken Object Level Authorization</small></td>
+                <td><small>Enforce object-level ownership checks server-side.</small></td>
+            </tr>
+            
+            <tr>
+                <td><span class="badge badge-medium">MEDIUM</span></td>
+                <td><strong>Missing Security Configuration Headers</strong></td>
+                <td><code>GET http://127.0.0.1:5001/api/profile</code></td>
+                <td><small>API7:2023 - Security Misconfiguration</small></td>
+                <td><small>Add standard HTTP security headers to all responses.</small></td>
+            </tr>
+            
+            <tr>
+                <td><span class="badge badge-medium">MEDIUM</span></td>
+                <td><strong>Missing Security Configuration Headers</strong></td>
+                <td><code>GET http://127.0.0.1:5001/api/products</code></td>
+                <td><small>API7:2023 - Security Misconfiguration</small></td>
+                <td><small>Add standard HTTP security headers to all responses.</small></td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            Generated automatically by API-SHIELD Dynamic Security Scanner &bull; Confirmed Defensive Evaluation
+        </footer>
+    </div>
+</body>
+</html>

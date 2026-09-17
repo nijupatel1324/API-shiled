@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — New Scan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| New Scan</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}" class="active">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <div class="card">
+      <h2>Scan Target</h2>
+      <p style="color:#9fb3c8;font-size:13px">Only scan APIs you own or have explicit permission to test.</p>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h2>Option A — Enter Base URL</h2>
+        <form method="post" action="{{ url_for('start_scan_form') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <label>Target Name</label>
+          <input type="text" name="target_name" placeholder="Local test API">
+          <label>API Base URL</label>
+          <input type="url" name="target_url" value="http://127.0.0.1:5001" placeholder="http://127.0.0.1:5001" required>
+          <h2 style="margin-top:16px">Optional Test Credentials (for authorization checks)</h2>
+          <div class="two-col">
+            <div><label>Admin username</label><input type="text" name="admin_username" placeholder="admin"></div>
+            <div><label>Admin password</label><input type="password" name="admin_password"></div>
+            <div><label>User username</label><input type="text" name="user_username" placeholder="user"></div>
+            <div><label>User password</label><input type="password" name="user_password"></div>
+            <div><label>Guest username</label><input type="text" name="guest_username" placeholder="guest"></div>
+            <div><label>Guest password</label><input type="password" name="guest_password"></div>
+          </div>
+          <button class="btn" type="submit">Start Scan</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Option B — Upload OpenAPI / Swagger File</h2>
+        <form method="post" action="{{ url_for('start_scan_upload') }}" enctype="multipart/form-data">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <label>OpenAPI/Swagger file (JSON or YAML)</label>
+          <input type="file" name="spec_file" accept=".json,.yaml,.yml" required>
+          <label>Base URL (leave empty to use the spec's servers)</label>
+          <input type="url" name="target_url" placeholder="http://127.0.0.1:5001">
+          <h2 style="margin-top:16px">Optional Test Credentials</h2>
+          <div class="two-col">
+            <div><label>Admin username</label><input type="text" name="admin_username" placeholder="admin"></div>
+            <div><label>Admin password</label><input type="password" name="admin_password"></div>
+            <div><label>User username</label><input type="text" name="user_username" placeholder="user"></div>
+            <div><label>User password</label><input type="password" name="user_password"></div>
+            <div><label>Guest username</label><input type="text" name="guest_username" placeholder="guest"></div>
+            <div><label>Guest password</label><input type="password" name="guest_password"></div>
+          </div>
+          <button class="btn" type="submit">Upload &amp; Scan</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Quick Start — Local Test API</h2>
+      <p style="font-size:14px;color:#9fb3c8">Run the bundled intentionally-vulnerable training API and scan it safely:</p>
+      <pre>cd test_api
+py app.py          # starts http://127.0.0.1:5001</pre>
+      <p style="font-size:14px;color:#9fb3c8">Then scan target <b>http://127.0.0.1:5001</b> with test credentials.</p>
+    </div>
+  </div>
+  <footer>API-SHIELD — authorized security testing only. Scan only systems you own or are permitted to test.</footer>
+</body>
+</html>

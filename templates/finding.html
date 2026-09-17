@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Finding #{{ f.id }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| Finding</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h2><span class="sev s-{{ f.severity }}">{{ f.severity }}</span> {{ f.title }}</h2>
+      <p class="fmeta">
+        {{ f.method }} <span class="mono">{{ f.endpoint }}</span>
+        &nbsp;&bull;&nbsp; {% if f.category %}OWASP: {{ f.category }}{% endif %}
+        &nbsp;&bull;&nbsp; <a href="{{ url_for('scan_detail', scan_id=f.scan_id) }}">Back to scan</a>
+      </p>
+      <h2>Description</h2>
+      <p>{{ f.description }}</p>
+      <h2>Evidence</h2>
+      <pre>{{ f.evidence }}</pre>
+      <h2>Recommendation</h2>
+      <p>{{ f.recommendation }}</p>
+      <h2>OWASP Mapping</h2>
+      <table>
+        <tr><th>Category</th><th>Risk</th></tr>
+        <tr><td>{% if f.category %}{{ f.category }}{% else %}UNC{% endif %}</td>
+          <td>{{ owasp.get(f.category, 'Uncategorised') }}</td></tr>
+      </table>
+    </div>
+  </div>
+  <footer>API-SHIELD — authorized security testing only.</footer>
+</body>
+</html>

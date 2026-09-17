@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| Security Dashboard</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    <div class="grid cols-2">
+      <div class="card" style="text-align:center">
+        <h2>Start a New Scan</h2>
+        <p style="color:#9fb3c8;font-size:14px">Scan a local or authorized test API for security weaknesses.</p>
+        <a class="btn" href="{{ url_for('new_scan') }}">Start Scan</a>
+      </div>
+      <div class="card">
+        <a href="{{ url_for('scans') }}">View Scan History</a>
+        <table style="margin-top:8px">
+          <tr><th>ID</th><th>Target</th><th>Score</th><th>Status</th></tr>
+          {% for s in recent %}
+          <tr>
+            <td><a href="{{ url_for('scan_detail', scan_id=s.id) }}">{{ s.id }}</a></td>
+            <td>{{ s.target.base_url if s.target else s.target_id }}</td>
+            <td>{{ s.score if s.score is not none else '—' }}</td>
+            <td><span class="pill {{ s.status }}">{{ s.status }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" style="color:#9fb3c8">No scans yet. Start your first scan to see results here.</td></tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <footer>API-SHIELD — authorized security testing only. Scan only systems you own or are permitted to test.</footer>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Scan Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| Scan #{{ scan.id }}</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div id="scan-head">
+        <h2>Target: {{ scan.target.base_url if scan.target else scan.target_id }}</h2>
+        <p style="color:#9fb3c8">
+          Status: <span class="pill {{ scan.status }}">{{ scan.status }}</span>
+          &nbsp;&bull;&nbsp; Endpoints: {{ scan.endpoints_count or '—' }}
+          &nbsp;&bull;&nbsp; Tests: {{ scan.tests_completed or '—' }}
+        </p>
+      </div>
+
+      {% if scan.status == 'running' %}
+      <div class="progress-wrap" style="max-width:420px"><div class="progress-bar" id="progress-bar"></div></div>
+      <div style="margin-top:8px;font-size:14px;color:#9fb3c8" id="progress-msg">Scanning…</div>
+      {% endif %}
+
+      {% if scan.status == 'failed' %}
+      <div class="alert error">The scan could not be completed. Check the target and try again.</div>
+      {% endif %}
+    </div>
+
+    {% if scan.status == 'completed' %}
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Security Score</h2>
+        <div class="score-ring {{ 'high' if (scan.score or 0) >= 70 else ('med' if (scan.score or 0) >= 50 else 'low') }}">
+          <div><span>{{ scan.score }}</span><small style="color:#9fb3c8">/ 100</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Findings by Severity</h2>
+        <table>
+          <tr><th>Severity</th><th>Count</th></tr>
+          <tr><td><span class="sev s-CRITICAL">CRITICAL</span></td><td id="c-CRITICAL">0</td></tr>
+          <tr><td><span class="sev s-HIGH">HIGH</span></td><td id="c-HIGH">0</td></tr>
+          <tr><td><span class="sev s-MEDIUM">MEDIUM</span></td><td id="c-MEDIUM">0</td></tr>
+          <tr><td><span class="sev s-LOW">LOW</span></td><td id="c-LOW">0</td></tr>
+          <tr><td><span class="sev s-INFO">INFO</span></td><td id="c-INFO">0</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Charts</h2>
+      <div class="two-col">
+        <canvas id="chart-severity" height="220"></canvas>
+        <canvas id="chart-owasp" height="220"></canvas>
+        <canvas id="chart-score" height="220"></canvas>
+        <canvas id="chart-endpoints" height="220"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Generate Report</h2>
+      <p style="font-size:14px;color:#9fb3c8">Create a professional HTML, PDF or JSON report for this scan.</p>
+      <button class="btn sm" onclick="generateReport('html')">HTML Report</button>
+      <button class="btn sm warn" onclick="generateReport('pdf')">PDF Report</button>
+      <button class="btn sm ghost" onclick="generateReport('json')">JSON Report</button>
+      <a id="dl-link" class="hidden"></a>
+    </div>
+
+    <div class="card">
+      <h2>Detailed Findings ({{ findings|length }})</h2>
+      {% for f in findings %}
+      <div class="finding">
+        <h3><span class="sev s-{{ f.severity }}">{{ f.severity }}</span> {{ f.title }}</h3>
+        <div class="fmeta">{{ f.method }} {{ f.endpoint }}
+          &nbsp;&bull;&nbsp; {% if f.category %}{{ f.category }}{% endif %}
+          &nbsp;&bull;&nbsp; <a href="{{ url_for('finding_detail', fid=f.id) }}">details</a>
+        </div>
+        <div style="font-size:13px;color:#cdd9e5">{{ f.description }}</div>
+      </div>
+      {% else %}
+      <p style="color:#9fb3c8">No findings recorded for this scan.</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <footer>API-SHIELD — authorized security testing only.</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>const SCAN_ID = {{ scan.id }}; const SCAN_STATUS = "{{ scan.status }}";</script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
