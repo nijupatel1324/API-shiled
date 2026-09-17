@@ -13,6 +13,8 @@
       <a href="{{ url_for('dashboard') }}">Dashboard</a>
       <a href="{{ url_for('new_scan') }}">New Scan</a>
       <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('trends') }}">Trends</a>
+      <a href="{{ url_for('schedules') }}">Schedules</a>
       <a href="{{ url_for('reports') }}">Reports</a>
       <a href="{{ url_for('logout') }}">Logout</a>
     </div>
@@ -78,6 +80,15 @@
       <button class="btn sm warn" onclick="generateReport('pdf')">PDF Report</button>
       <button class="btn sm ghost" onclick="generateReport('json')">JSON Report</button>
       <a id="dl-link" class="hidden"></a>
+    </div>
+
+    <div class="card">
+      <h2>Actions</h2>
+      <p style="font-size:14px;color:#9fb3c8">Rerun the full scan against this target. A new scan record is created.</p>
+      <form method="POST" action="{{ url_for('rescan_scan', scan_id=scan.id) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <button class="btn sm warn" type="submit">Re-Scan Target</button>
+      </form>
     </div>
 
     <div class="card">

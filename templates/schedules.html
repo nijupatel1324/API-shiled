@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Scan Schedules</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| Scan Schedules</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('trends') }}">Trends</a>
+      <a href="{{ url_for('schedules') }}" class="active">Schedules</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    {% if error %}
+    <div class="alert error">{{ error }}</div>
+    {% endif %}
+
+    <div class="card">
+      <h2>Schedule a Recurring Scan</h2>
+      <form method="POST" action="{{ url_for('schedule_new') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <div class="field">
+          <label>Target</label>
+          <select name="target_id" required>
+            <option value="">Select a target…</option>
+            {% for t in targets %}
+            <option value="{{ t.id }}">{{ t.base_url }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field" style="max-width:260px">
+          <label>Repeat every (hours)</label>
+          <input type="number" name="interval_hours" value="24" min="1" required>
+        </div>
+        <button class="btn" type="submit">Add Schedule</button>
+      </form>
+      {% if not targets %}
+      <p style="color:var(--muted);font-size:13px;margin-top:8px">
+        No targets available yet. Run a scan first to create a target.
+      </p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Active Schedules</h2>
+      <table>
+        <tr><th>ID</th><th>Target</th><th>Interval</th><th>Next Run</th><th>Last Run</th><th>State</th><th></th></tr>
+        {% for s in schedules %}
+        <tr>
+          <td>{{ s.id }}</td>
+          <td>{{ s.target.base_url if s.target else s.target_id }}</td>
+          <td>every {{ s.interval_hours }}h</td>
+          <td>{{ s.next_label }}</td>
+          <td>{{ s.last_label }}</td>
+          <td><span class="pill {{ 'completed' if s.enabled else 'failed' }}">{{ 'enabled' if s.enabled else 'disabled' }}</span></td>
+          <td>
+            <form method="POST" action="{{ url_for('schedule_toggle', sched_id=s.id) }}" style="display:inline">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <button class="btn sm ghost" type="submit">{{ 'Disable' if s.enabled else 'Enable' }}</button>
+            </form>
+            <form method="POST" action="{{ url_for('schedule_delete', sched_id=s.id) }}" style="display:inline"
+                  onsubmit="return confirm('Delete this schedule?')">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <button class="btn sm danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="color:#9fb3c8">No schedules yet. Create one above to scan a target on a recurring basis.</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+  <footer>API-SHIELD — authorized security testing only. Scan only systems you own or are permitted to test.</footer>
+</body>
+</html>

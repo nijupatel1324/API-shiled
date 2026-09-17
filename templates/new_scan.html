@@ -13,6 +13,8 @@
       <a href="{{ url_for('dashboard') }}">Dashboard</a>
       <a href="{{ url_for('new_scan') }}" class="active">New Scan</a>
       <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('trends') }}">Trends</a>
+      <a href="{{ url_for('schedules') }}">Schedules</a>
       <a href="{{ url_for('reports') }}">Reports</a>
       <a href="{{ url_for('logout') }}">Logout</a>
     </div>
@@ -43,6 +45,7 @@
             <div><label>User password</label><input type="password" name="user_password"></div>
             <div><label>Guest username</label><input type="text" name="guest_username" placeholder="guest"></div>
             <div><label>Guest password</label><input type="password" name="guest_password"></div>
+            <div><label>BOLA resource ID (optional)</label><input type="text" name="resource_id" placeholder="1"></div>
           </div>
           <button class="btn" type="submit">Start Scan</button>
         </form>
@@ -64,6 +67,7 @@
             <div><label>User password</label><input type="password" name="user_password"></div>
             <div><label>Guest username</label><input type="text" name="guest_username" placeholder="guest"></div>
             <div><label>Guest password</label><input type="password" name="guest_password"></div>
+            <div><label>BOLA resource ID (optional)</label><input type="text" name="resource_id" placeholder="1"></div>
           </div>
           <button class="btn" type="submit">Upload &amp; Scan</button>
         </form>

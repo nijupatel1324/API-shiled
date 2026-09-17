@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API-SHIELD — Score Trends</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">API-SHIELD <small>| Score Trends</small></div>
+    <div class="nav">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('new_scan') }}">New Scan</a>
+      <a href="{{ url_for('scans') }}">Scan History</a>
+      <a href="{{ url_for('trends') }}" class="active">Trends</a>
+      <a href="{{ url_for('schedules') }}">Schedules</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="user-chip">{{ current_user.username }}</div>
+  </div>
+
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2 style="margin:0">Security Score Trends</h2>
+      <a class="btn" href="{{ url_for('trends_export') }}">Export CSV</a>
+    </div>
+
+    {% for group in trends %}
+    <div class="card">
+      <h2>{{ group.target }}</h2>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:10px">{{ group.base_url }}</div>
+      <table>
+        <tr><th>Scan</th><th>Date (UTC)</th><th>Score</th><th>Trend</th><th>Findings</th><th>Status</th></tr>
+        {% for p in group.points %}
+        <tr>
+          <td><a href="{{ url_for('scan_detail', scan_id=p.scan_id) }}">#{{ p.scan_id }}</a></td>
+          <td>{{ p.label }}</td>
+          <td>{{ p.score }}</td>
+          <td style="min-width:160px">
+            <span style="display:inline-block;height:8px;border-radius:4px;
+                         width:{{ p.score }}%;background:{{ '#2fb344' if p.score >= 80 else ('#f0b429' if p.score >= 50 else '#d64545') }}"></span>
+          </td>
+          <td>{{ p.findings }}</td>
+          <td><span class="pill {{ p.status }}">{{ p.status }}</span></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% else %}
+    <div class="card" style="text-align:center;color:var(--muted)">
+      No completed scans with a security score yet.
+      <a href="{{ url_for('new_scan') }}">Start your first scan</a> to see score trends over time.
+    </div>
+    {% endfor %}
+  </div>
+  <footer>API-SHIELD — authorized security testing only. Scan only systems you own or are permitted to test.</footer>
+</body>
+</html>

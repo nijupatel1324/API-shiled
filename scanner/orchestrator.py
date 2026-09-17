@@ -126,6 +126,7 @@ def _execute_scan(project, endpoints, progress_scan_id=None) -> dict:
     from tests_engine.authentication import AuthenticationAnalyzer
     from tests_engine.error_analysis import ErrorAnalyzer
     from tests_engine.validation import InputValidationAnalyzer
+    from tests_engine.rate_limit import RateLimitAnalyzer
 
     report = {
         "headers": [],
@@ -135,11 +136,12 @@ def _execute_scan(project, endpoints, progress_scan_id=None) -> dict:
         "authentication": [],
         "error_handling": [],
         "input_validation": [],
+        "rate_limiting": [],
     }
     validation_test_log = []
 
     engine = SafeRequestEngine(allowed_hosts=load_allowed_hosts())
-    total_steps = 2 + len([e for e in endpoints if "{" not in e.path])
+    total_steps = 3 + len([e for e in endpoints if "{" not in e.path])
     step = 0
 
     def bump():
@@ -199,6 +201,15 @@ def _execute_scan(project, endpoints, progress_scan_id=None) -> dict:
 
         bump()
 
+    # Project-level checks: rate limiting + request payload size limits (API4)
+    rla = RateLimitAnalyzer(
+        base_url=project.base_url,
+        endpoints=endpoints,
+        request_engine=engine,
+    )
+    report["rate_limiting"] = rla.analyze()
+    bump()
+
     all_findings = []
     for module_findings in report.values():
         all_findings.extend(module_findings)
@@ -243,6 +254,10 @@ def _execute_scan(project, endpoints, progress_scan_id=None) -> dict:
                 "count": len(report["input_validation"]),
                 "findings": report["input_validation"],
                 "test_log": validation_test_log,
+            },
+            "rate_limiting": {
+                "count": len(report["rate_limiting"]),
+                "findings": report["rate_limiting"],
             },
         },
         "_findings": all_findings,

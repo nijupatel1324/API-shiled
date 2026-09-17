@@ -25,6 +25,7 @@ class Config:
     DEFAULT_RATE_LIMIT_TEST_REQUESTS = int(
         os.environ.get("DEFAULT_RATE_LIMIT_TEST_REQUESTS", "25")
     )
+    SCHEDULER_POLL_SECONDS = int(os.environ.get("SCHEDULER_POLL_SECONDS", "60"))
     REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "15"))
     MAX_PAYLOAD_SIZE = int(os.environ.get("MAX_PAYLOAD_SIZE", str(1024 * 1024)))
 

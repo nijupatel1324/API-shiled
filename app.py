@@ -61,21 +61,27 @@ def create_app(test_config: dict = None) -> Flask:
     db.init_app(app)
 
     # SQLite needs WAL + a busy timeout for the background scan thread to
-    # write findings while the web thread serves progress polls.
+    # write findings while the web thread serves progress polls. The listener
+    # is registered once per process: a fresh registration per app would get
+    # unregistered during teardown while a background worker is mid-connect,
+    # raising "deque mutated during iteration".
     if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
         from sqlalchemy import event
         from sqlalchemy.engine import Engine
 
-        @event.listens_for(Engine, "connect")
-        def _sqlite_pragmas(dbapi_connection, connection_record):
-            cursor = dbapi_connection.cursor()
-            try:
-                cursor.execute("PRAGMA journal_mode=WAL")
-                cursor.execute("PRAGMA busy_timeout=30000")
-            except Exception:
-                pass
-            finally:
-                cursor.close()
+        if not globals().get("_sqlite_pragmas_registered"):
+            @event.listens_for(Engine, "connect")
+            def _sqlite_pragmas(dbapi_connection, connection_record):
+                cursor = dbapi_connection.cursor()
+                try:
+                    cursor.execute("PRAGMA journal_mode=WAL")
+                    cursor.execute("PRAGMA busy_timeout=30000")
+                except Exception:
+                    pass
+                finally:
+                    cursor.close()
+
+            globals()["_sqlite_pragmas_registered"] = True
 
     # Register model layer (scan history) so all tables are created.
     import models  # noqa: F401
@@ -170,6 +176,9 @@ app = create_app()
 
 
 if __name__ == "__main__":
+    from scanner.scheduler import start_scheduler
+
+    start_scheduler(app)
     logger.info("Starting API-SHIELD on http://127.0.0.1:5000 ...")
     app.run(
         host="127.0.0.1",

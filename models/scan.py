@@ -81,3 +81,19 @@ class Report(db.Model):
     generated_at = Column(Float, default=_default_timestamp)
 
     scan = relationship("Scan")
+
+
+class ScanSchedule(db.Model):
+    """Recurring scan schedule: re-scans a target every N hours."""
+
+    __tablename__ = "scan_schedules"
+
+    id = Column(Integer, primary_key=True)
+    target_id = Column(Integer, ForeignKey("targets.id"), nullable=False)
+    interval_hours = Column(Integer, default=24, nullable=False)
+    enabled = Column(Boolean, default=True)
+    created_at = Column(Float, default=_default_timestamp)
+    last_run_at = Column(Float, nullable=True)
+    next_run_at = Column(Float, nullable=True)
+
+    target = relationship("Target")
