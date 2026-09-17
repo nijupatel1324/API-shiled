@@ -37,11 +37,11 @@ def mask_sensitive_response(text):
 
     def _mask_pair(match):
         key = match.group(1)
-        return f"{key}: \"{mask_string(match.group(2))}\""
+        return f'{key}="{mask_string(match.group(2), prefix_chars=4)}"'
 
     text = re.sub(
-        r"(password|passwd|secret|api[_-]?key|token|authorization)\"\?\s*[:=]\s*"
-        r"[\"']([^\"']+)[\"']",
+        r"(password|passwd|secret|api[_-]?key|token|authorization)\"?\s*[:=]\s*"
+        r"[\"']?([^&\"'\s,;}]+)[\"']?",
         _mask_pair,
         text,
         flags=re.IGNORECASE,
